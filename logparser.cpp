@@ -6,8 +6,6 @@
 #include <iomanip>
 #include <ctime>
 
-#include "progress_bar.hpp"
-
 namespace fs = std::filesystem;
 using namespace std::literals;
 
@@ -36,7 +34,7 @@ int MeasureFile(std::ifstream& in)
 	return res;
 }
 
-int Readline(std::ifstream& in, std::string& line, ProgressBar& bar)
+int Readline(std::ifstream& in, std::string& line)
 {
 	char ch;
 	line.clear();
@@ -54,20 +52,16 @@ int SearchRegexInFile(std::ifstream& in, const std::regex& reg, std::ofstream& o
 	int cnt = 0;
 	std::string line;
 	int file_size = MeasureFile(in);
-	ProgressBar bar(file_size);
-	bar.SetFrequencyUpdate(file_size / 2);
 	int progress = 0;
-	while (int n = Readline(in, line, bar))
+	while (int n = Readline(in, line))
 	{
 		progress += n;
-		bar.Progressed(progress);
 		if (std::regex_search(line, reg))
 		{
 			++cnt;
 			out << line << '\n';
 		}
 	}
-	bar.Progressed(file_size);
 	return cnt;
 }
 
